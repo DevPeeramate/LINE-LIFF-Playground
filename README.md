@@ -1,1 +1,1 @@
-LIFF_ID=2008724880-mhCUGGBq
+# LINE-LIFF-Playground
