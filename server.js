@@ -17,19 +17,28 @@ const port = "8888";
 
 const LINE_BOT_API = "https://api.line.me/v2/bot";
 
-app.post("/send-message", async (req, res) => {
-  try {
-    const {userId, messages } = req.body
+const sendMessage = async (userId, message) =>{
+  try{
     const body = {
       to: userId,
       messages: [
         {
           type: "text",
-          text: messages,
+          text: message,
         },
       ],
     };
     const response = await axios.post(`${LINE_BOT_API}/message/push`, body,{headers});
+    return response
+  }catch(error){
+    throw new Error('error : ',error)
+  }
+}
+
+app.post("/send-message", async (req, res) => {
+  try {
+    const { userId, message } = req.body
+    const response = await sendMessage(userId, message)
     console.log('response',response.data)
     res.json({
         message:"Send message success",
@@ -37,10 +46,11 @@ app.post("/send-message", async (req, res) => {
     })
   } catch (error) {
     console.log('error', error.response)
+    res.status(500).json({ error: error.message })
   }
 });
 
-app.post('/webhook', (req, res) => {
+app.post('/webhook', async (req, res) => {
   const { events } = req.body
   console.log(req.body)
   if(!events || events.lenght == 0){
@@ -49,7 +59,35 @@ app.post('/webhook', (req, res) => {
     })
     return false
   }
+    
   console.log('events : ',events)
+  try {
+    const lineEvent = events[0]
+    const richMenuForCustomer = process.env.DEFAULT_RICE_MENU_FOR_CUSTOMER
+    const richMenuForUser = process.env.DEFAULT_RICE_MENU_FOR_USER
+    const userId = lineEvent.source.userId
+    
+    if(lineEvent.message.text === 'A'){
+      const response = await axios.post(`${LINE_BOT_API}/user/${userId}/richmenu/${richMenuForUser}`,{},{headers})
+      console.log('response',response.data)
+      await sendMessage(userId, 'Welcome for user menu')
+    }
+
+    if(lineEvent.message.text === 'B'){
+      const response = await axios.post(`${LINE_BOT_API}/user/${userId}/richmenu/${richMenuForCustomer}`,{},{headers})
+      console.log('response',response.data)
+      await sendMessage(userId, 'Welcome for customer menu')
+    }
+    console.log('response',response.data)
+    
+    res.json({
+        message:"Send message success",
+        responseData:response.data
+    })
+  } catch (error) {
+    console.log('error', error.response)
+    res.status(500).json({ error: error.message })
+  }
 })
 
 app.listen(port, () => {

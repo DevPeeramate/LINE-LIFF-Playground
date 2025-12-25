@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>LINE LIFF</title>
 </head>
 <body>
     <div>
@@ -61,7 +61,7 @@
                 }
                 const response = await axios.post('https://transpulmonary-hermina-nonusurping.ngrok-free.dev/send-message',{
                     userId,
-                    messages: lineMessage.value
+                    message: lineMessage.value
                 })
                 console.log(userId,lineMessage.value)
                 console.log('response :',response.data)
