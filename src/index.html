@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <span id="loading">Loading</span>
+        
+        <div id="lineProfile" style="display: none;">
+        <img id="lineImage" width="100" src="https://picsum.photos/seed/picsum/200/300">
+        <div id="lineName">
+            Hello Name
+        </div>
+        <div id="lineUID">
+            UID : Your UID
+        </div>
+        <div>
+            <input id="lineMessage" type="text">
+            <button onclick="sendMessage()">Send Message</button>
+        </div>
+        <button id="logout" onclick="logout()">Logout</button>
+    </div>
+    </div>
+    
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+
+    <script>
+        let userId = ''
+        const main = async () =>{
+            await liff.init({liffId: '2008724880-mhCUGGBq'})
+            if(!liff.isLoggedIn()){
+                liff.login()
+                return false
+            }
+            const profile = await liff.getProfile()
+
+            loading.style.display = 'none'
+            lineImage.src = profile.pictureUrl
+            lineName.textContent = `Hello ${profile.displayName}`
+            lineUID.textContent = profile.userId
+            lineProfile.style.display = 'block'
+
+            console.log('LINE LoggedIN',profile)
+            userId = profile.userId
+        
+        }
+
+        const logout = async () =>{
+                liff.logout()
+                window.location.reload()
+            }
+
+        const sendMessage = async () =>{
+            try{
+                if(!lineMessage.value){
+                    throw new Error('Massage not found')
+                }
+                const response = await axios.post('https://transpulmonary-hermina-nonusurping.ngrok-free.dev//sent-message',{
+                    userId,
+                    messages: lineMessage.value
+                })
+                console.log(userId,lineMessage.value)
+                console.log('response :',response.data)
+            }catch(error){
+                console.log('error send message : ',error)
+            }
+        }
+
+        main()
+    </script>
+</body>
+</html>
