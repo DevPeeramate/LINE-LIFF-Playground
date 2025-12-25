@@ -59,7 +59,7 @@
                 if(!lineMessage.value){
                     throw new Error('Massage not found')
                 }
-                const response = await axios.post('https://transpulmonary-hermina-nonusurping.ngrok-free.dev/sent-message',{
+                const response = await axios.post('https://transpulmonary-hermina-nonusurping.ngrok-free.dev/send-message',{
                     userId,
                     messages: lineMessage.value
                 })

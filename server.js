@@ -17,7 +17,7 @@ const port = "8888";
 
 const LINE_BOT_API = "https://api.line.me/v2/bot";
 
-app.post("/sent-message", async (req, res) => {
+app.post("/send-message", async (req, res) => {
   try {
     const {userId, messages } = req.body
     const body = {
@@ -39,6 +39,18 @@ app.post("/sent-message", async (req, res) => {
     console.log('error', error.response)
   }
 });
+
+app.post('/webhook', (req, res) => {
+  const { events } = req.body
+  console.log(req.body)
+  if(!events || events.lenght == 0){
+    res.json({
+      message:'No events'
+    })
+    return false
+  }
+  console.log('events : ',events)
+})
 
 app.listen(port, () => {
   console.log(`run at http://localhost:${port}`);
